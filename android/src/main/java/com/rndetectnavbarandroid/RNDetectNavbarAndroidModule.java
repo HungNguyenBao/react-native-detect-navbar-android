@@ -2,6 +2,7 @@ package com.rndetectnavbarandroid;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -50,30 +51,11 @@ public class RNDetectNavbarAndroidModule extends ReactContextBaseJavaModule {
   @SuppressLint ("NewApi")
   private boolean hasImmersive() {
 
-      if (!cached) {
-          if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-              hasImmersive = false;
-              cached = true;
-              return false;
-          }
-          Display d = ((WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-
-          DisplayMetrics realDisplayMetrics = new DisplayMetrics();
-          d.getRealMetrics(realDisplayMetrics);
-
-          int realHeight = realDisplayMetrics.heightPixels;
-          int realWidth = realDisplayMetrics.widthPixels;
-
-          DisplayMetrics displayMetrics = new DisplayMetrics();
-          d.getMetrics(displayMetrics);
-
-          int displayHeight = displayMetrics.heightPixels;
-          int displayWidth = displayMetrics.widthPixels;
-
-          hasImmersive = (realWidth > displayWidth) || (realHeight > displayHeight);
-          cached = true;
-      }
-
-      return hasImmersive;
+    Resources resources = reactContext.getResources();
+    int resourceId = resources.getIdentifier("config_navBarInteractionMode", "integer", "android");
+    if (resourceId > 0) {
+      return resources.getInteger(resourceId) < 2;
+    }
+    return true;
   }
 }
